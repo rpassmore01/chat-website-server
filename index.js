@@ -5,8 +5,18 @@ const io = require("socket.io")(8000, {
 });
 
 io.on("connection", (socket) => {
-  socket.on("send-message", (obj) => {
-    console.log(obj.message);
-    socket.broadcast.emit("receive-message", obj);
+  //Gets send message event
+  socket.on("send-message", (obj, room) => {
+    if (room === "") {
+      //broadcasts to every client
+      socket.broadcast.emit("receive-message", obj);
+    } else {
+      //broadcasts to certain room
+      socket.broadcast.to(room).emit("receive-message", obj);
+    }
+  });
+
+  socket.on("join-room", (room) => {
+    socket.join(room);
   });
 });
